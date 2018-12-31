@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Doc</title>
+    <link href="style.css" rel="stylesheet" >
+</head>
+
+<script>
+
+
+const express = require('express');
+var app = express();
+var upload = require('express-fileupload');
+const http = require('http');
+http.Server(app).listen(80); // make server listen on port 80
+
+app.use(upload()); // configure middleware
+
+console.log("Server Started at port 80");
+
+app.get('/',function(req,res){
+    res.sendFile(__dirname+'/up.html');
+})
+app.post('/up',function(req,res){
+    console.log(req.files);
+    if(req.files.upfile){
+        var file = req.files.upfile,
+            name = file.name,
+            type = file.mimetype;
+        var uploadpath = __dirname + '/uploads/' + name;
+        file.mv(uploadpath,function(err){
+            if(err){
+                console.log("File Upload Failed",name,err);
+                res.send("Error Occured!")
+            }
+            else {
+                console.log("File Uploaded",name);
+                res.send('Done! Uploading files')
+            }
+        });
+    }
+    else {
+        res.send("No File selected !");
+        res.end();
+    };
+})
+
+</script>
+
+
+
+<body onload="startTime()" >
+<header id="mainHeader">
+    <div id="hello"></div>
+    <h1>CIM - Central Information Management</h1>
+    <nav>
+        <ul>
+            <li><a href="1.html">Home</a></li>
+            <li><a class="active" href="up.html">Upload</a></li>
+            <li><a href="#">Repotrs</a></li>
+            <li><a href="#">Documents</a></li>
+        </ul>
+    </nav>
+    <hr>
+    <p></p>
+</header>
+
+<main>
+    <header id="dashead">
+        <div class="upload">
+            <h1>Upload File </h1>
+            <p>
+            <form method="post" enctype="multipart/form-data" action="/" >
+               <label>Choose file to upload:(Doc, PDF)</label>
+                <input type="file"  name="filename">
+                <input type="submit" name="upload" value="upload">
+        </form>
+            </p>
+        </div>
+
+    </header>
+</main>
+
+
+</body>
+
+
+
+
+
+</html>
